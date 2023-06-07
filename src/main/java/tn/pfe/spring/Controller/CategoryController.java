@@ -4,27 +4,24 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import tn.pfe.spring.DTO.UserDTO;
+import tn.pfe.spring.Entity.AppUser;
 import tn.pfe.spring.Entity.Category;
 import tn.pfe.spring.Entity.MenuItem;
 import tn.pfe.spring.Service.CategoryService;
 
 @RestController
+@RequestMapping("/categories")
 public class CategoryController{
 
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("/getAllCategories") //tested successfully
-    public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
+    @GetMapping("/") //tested successfully
+    public ResponseEntity<List<Category>> getAllCategories() {
+        return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
     @GetMapping("/getCategoryById/{id}") //tested successfully
@@ -47,9 +44,9 @@ public class CategoryController{
         return ResponseEntity.ok(message);
     }
 
-    @PostMapping("/addCategory") //tested successfully
-    public String createCategory(@RequestBody Category category) {
-        return categoryService.createCategory(category);
+    @PostMapping("/") //tested successfully
+    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+        return ResponseEntity.ok().body(categoryService.createCategory(category));
     }
 
     @PutMapping("/updateCategory/{id}")//tested successfully
