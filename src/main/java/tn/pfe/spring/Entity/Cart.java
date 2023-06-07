@@ -23,21 +23,21 @@ import tn.pfe.spring.Entity.Cart;
 @Table(name = "cart")
 @Data
 public class Cart {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
 
-	@OneToOne
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-	    @ManyToMany
-	    @JoinTable(
-	        name = "cart_menu_items",
-	        joinColumns = @JoinColumn(name = "cart_id"),
-	        inverseJoinColumns = @JoinColumn(name = "menu_item_id")
-	    )
-	    private List<MenuItem> items;
+    @ManyToMany
+    @JoinTable(
+            name = "cart_menu_items",
+            joinColumns = @JoinColumn(name = "cart_id"),
+            inverseJoinColumns = @JoinColumn(name = "menu_item_id")
+    )
+    private List<MenuItem> items;
 }
 
