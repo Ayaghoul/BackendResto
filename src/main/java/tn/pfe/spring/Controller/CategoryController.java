@@ -19,7 +19,7 @@ public class CategoryController{
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("/") //tested successfully
+    @GetMapping("/get-all-categories") //tested successfully
     public ResponseEntity<List<Category>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
@@ -49,12 +49,12 @@ public class CategoryController{
         return ResponseEntity.ok().body(categoryService.createCategory(category));
     }
 
-    @PutMapping("/updateCategory/{id}")//tested successfully
+    @PatchMapping("/update-category/{id}")//tested successfully
     public Category updateCategory(@PathVariable Long id, @RequestBody Category category) {
         return categoryService.updateCategory(id, category);
     }
 
-    @DeleteMapping("/deleteCategory/{id}")//tested successfully
+    @DeleteMapping("/delete-category/{id}")//tested successfully
     public void deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
     }

@@ -1,8 +1,8 @@
 package tn.pfe.spring.config;
 
 
-
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,25 +41,34 @@ public class JWTAuthorisationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         } else {
-            String jwtToken = request.getHeader(SecurityConstants.HEADER_STRING);
-            if (jwtToken == null || !jwtToken.startsWith(SecurityConstants.TOKEN_PREFIX)) {
+            try {
+                String jwtToken = request.getHeader(SecurityConstants.HEADER_STRING);
+                if (jwtToken == null || !jwtToken.startsWith(SecurityConstants.TOKEN_PREFIX)) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+                JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(SecurityConstants.SECRET)).build();
+                String jwt = jwtToken.substring(SecurityConstants.TOKEN_PREFIX.length());
+                DecodedJWT decodedJWT = jwtVerifier.verify(jwt);
+                String username = decodedJWT.getSubject();
+                List<String> roles = decodedJWT.getClaims().get("roles").asList(String.class);
+                System.out.println(roles);
+                Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+                for (String role : roles) {
+                    authorities.add(new SimpleGrantedAuthority(role));
+                }
+                UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(user);
                 filterChain.doFilter(request, response);
+            } catch (TokenExpiredException ex) {
+                // Handle the TokenExpiredException
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.setContentType("text/plain");
+                PrintWriter writer = response.getWriter();
+                ex.printStackTrace(writer);
+                writer.flush();
                 return;
             }
-            JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(SecurityConstants.SECRET)).build();
-            String jwt = jwtToken.substring(SecurityConstants.TOKEN_PREFIX.length());
-            DecodedJWT decodedJWT = jwtVerifier.verify(jwt);
-            String username = decodedJWT.getSubject();
-            List<String> roles = decodedJWT.getClaims().get("roles").asList(String.class);
-            System.out.println(roles);
-            Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-            for (String role : roles) {
-                authorities.add(new SimpleGrantedAuthority(role));
-            }
-            UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(username, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(user);
-            filterChain.doFilter(request, response);
-
 
         }
     }
