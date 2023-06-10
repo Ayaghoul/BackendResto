@@ -50,8 +50,10 @@ public class ReservationServiceImpl implements ReservationService {
     public Reservation createReservation(ReservationDTO reservationDTO) {
         AppUser userToUpdate = userRepository.findById(reservationDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("L'utilisateur avec l'ID " + reservationDTO.getUserId() + " n'a pas été trouvée."));
-        Reservation reservation = reservationMapper.toEntity(reservationDTO);
+        Reservation reservation = new Reservation();
         reservation.setUser(userToUpdate);
+        reservation.setDate(reservationDTO.getDate());
+        reservation.setTime(reservationDTO.getTime());
         reservation.setStatus(ReservationStatus.Pending);
         return reservationRepository.save(reservation);
     }
