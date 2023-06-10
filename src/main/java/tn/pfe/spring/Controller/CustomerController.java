@@ -2,7 +2,6 @@
 package tn.pfe.spring.Controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,15 +11,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import tn.pfe.spring.Entity.Cart;
 import tn.pfe.spring.Entity.Customer;
 
 import tn.pfe.spring.Entity.MenuItem;
 import tn.pfe.spring.Repository.CustomerRepository;
-import tn.pfe.spring.Service.CartService;
 import tn.pfe.spring.Service.CustomerService;
 
 @RestController
@@ -60,21 +56,9 @@ public class CustomerController {
    
    
     
-   @GetMapping("/{custmorId}/favoris")  //tested successfully
-   public ResponseEntity<List<MenuItem>> getFavoris(@PathVariable Long customerId) {
-       List<MenuItem> favoris = customerService.getFavoris(customerId);
-       return ResponseEntity.ok(favoris);
-   }
 
-   @DeleteMapping("/{customerId}/favoris/{menuItemId}") //tested successfully
-   public ResponseEntity<String> removeMenuItemFromFavoris(
-           @PathVariable Long customerId,
-           @PathVariable Long menuItemId
-   ) 
-   {
-       String message = customerService.removeMenuItemFromFavoris(customerId, menuItemId);
-       return ResponseEntity.ok(message);
-   }
+
+
    
    
    @GetMapping("/{customerId}/caloriesConsumed")

@@ -30,17 +30,15 @@ public class MenuItemController {
     private final MenuItemRepository menuItemRepository;
 
 
-    @GetMapping("/getAllMenuItem") //tested successfully
+    @GetMapping("/get-all-menu-items") //tested successfully
     public List<MenuItem> getAllMenuItem() {
         return menuItemService.getAllMenuItem();
     }
-    //msg de retour ken ma fama htta produit
 
 
-    @GetMapping("/MenuItemById/{id}") //tested successfully
+    @GetMapping("/menu-item-by-id/{id}") //tested successfully
     public MenuItem getMenuItemById(@PathVariable Long id) {
         return menuItemService.getMenuItemById(id);
-        //msg de retour ken ma fama htta produit
     }
 
 
@@ -54,7 +52,7 @@ public class MenuItemController {
         return menuItemService.updateMenuItem(id, menuItem);
     }
 
-    @DeleteMapping("/deleteMenuItem/{id}") //tested successfully
+    @DeleteMapping("/delete-menu-item/{id}") //tested successfully
     public void deleteMenuItem(@PathVariable Long id) {
         menuItemService.deleteMenuItem(id);
 

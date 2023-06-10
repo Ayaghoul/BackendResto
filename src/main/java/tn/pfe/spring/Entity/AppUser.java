@@ -1,11 +1,13 @@
 package tn.pfe.spring.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -29,4 +31,13 @@ public class AppUser {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles=new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany
+    @JoinTable(name = "user_favoris",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "menuItem_id"))
+    private List<MenuItem> favoris;
+
+
 }

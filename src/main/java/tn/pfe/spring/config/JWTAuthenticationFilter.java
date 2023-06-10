@@ -2,8 +2,12 @@ package tn.pfe.spring.config;
 
 
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -11,6 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.auth0.jwt.JWT;
 import tn.pfe.spring.Entity.AppUser;
+import tn.pfe.spring.exception.GlobalExceptionHandler;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -22,7 +27,7 @@ import java.util.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
         super();
@@ -40,9 +45,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                             user.getPassword()
                     )
             );
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            throw new RuntimeException(exception);
+        } catch (Exception  ex) {
+            throw new AuthenticationServiceException("Error reading user credentials", ex);
         }
     }
 
@@ -58,7 +62,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withIssuer(request.getRequestURI())
                 .withSubject(springUser.getUsername())
                 .withArrayClaim("roles", roles.toArray(new String[roles.size()]))
-                .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 24 * 3600))
                 .sign(Algorithm.HMAC256(SecurityConstants.SECRET));
         response.addHeader("Authorization", "Bearer " + jwt);
         Map<String, String> tokens = new HashMap<>();

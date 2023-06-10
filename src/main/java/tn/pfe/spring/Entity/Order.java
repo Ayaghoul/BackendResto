@@ -36,7 +36,7 @@ public class Order {
 
 	    @ManyToOne
 	    @JoinColumn(name = "customer_id")
-	    private Customer customer;
+	    private AppUser customer;
 	    
 	    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	    private Set<OrderItem> orderItems = new HashSet<>();

@@ -1,5 +1,6 @@
 package tn.pfe.spring.Entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -30,7 +31,7 @@ public class Cart {
 
     @OneToOne
     @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private AppUser customer;
 
     @ManyToMany
     @JoinTable(
@@ -38,6 +39,6 @@ public class Cart {
             joinColumns = @JoinColumn(name = "cart_id"),
             inverseJoinColumns = @JoinColumn(name = "menu_item_id")
     )
-    private List<MenuItem> items;
+    private List<MenuItem> items=new ArrayList<>();
 }
 

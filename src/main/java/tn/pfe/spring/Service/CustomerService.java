@@ -1,41 +1,20 @@
 package tn.pfe.spring.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
-
-import tn.pfe.spring.Entity.Cart;
-import tn.pfe.spring.Entity.Category;
-import tn.pfe.spring.Entity.Customer;
-import tn.pfe.spring.Entity.MenuItem;
-import tn.pfe.spring.Entity.Order;
-import tn.pfe.spring.Entity.OrderItem;
-import tn.pfe.spring.Entity.OrderStatus;
-import tn.pfe.spring.Repository.CartRepository;
-import tn.pfe.spring.Repository.CustomerRepository;
-
-import tn.pfe.spring.Repository.MenuItemRepository;
-import tn.pfe.spring.Repository.OrderRepository;
-
+import tn.pfe.spring.Entity.*;
+import tn.pfe.spring.Repository.*;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerService {
     
-    @Autowired
-    private MenuItemRepository menuItemRepository;
-    @Autowired
-    private CustomerRepository customerRepository;
-  
-   
-   
-    
+    private final MenuItemRepository menuItemRepository;
+    private final CustomerRepository customerRepository;
+
     public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
     }

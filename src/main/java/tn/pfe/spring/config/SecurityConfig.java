@@ -18,7 +18,16 @@ import tn.pfe.spring.Service.impl.UserDetailsServiceImpl;
 class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsServiceImpl userDetailsService;
-
+    private static final String[] AUTH_WHITELIST = {
+            "/authenticate",
+            "/api/v1/courses/get-all-courses",
+            "/uploads",
+            "/swagger-resources/**",
+            "/swagger-ui/**",
+            "/v3/api-docs",
+            "/webjars/**",
+            "/**","resources/static/**"
+    };
     @Bean
     public BCryptPasswordEncoder getbCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -37,6 +46,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("POST","/users/signup/**").permitAll();
         http.authorizeRequests().antMatchers("/categories/get-all-categories").permitAll();
         http.authorizeRequests().antMatchers("POST","/register/**").permitAll();
+        http.authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(new JWTAuthenticationFilter(authenticationManager()));
         http.addFilterBefore(new JWTAuthorisationFilter(), UsernamePasswordAuthenticationFilter.class);

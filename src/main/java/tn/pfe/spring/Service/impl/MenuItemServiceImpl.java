@@ -2,30 +2,20 @@ package tn.pfe.spring.Service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import tn.pfe.spring.DTO.MenuItemDTO;
-import tn.pfe.spring.DTO.UserDTO;
-import tn.pfe.spring.Entity.AppUser;
 import tn.pfe.spring.Entity.Category;
 import tn.pfe.spring.Entity.MenuItem;
-import tn.pfe.spring.Entity.Role;
 import tn.pfe.spring.Repository.MenuItemRepository;
-import tn.pfe.spring.Repository.RoleRepository;
-import tn.pfe.spring.Repository.UserRepository;
 import tn.pfe.spring.Service.CategoryService;
+import tn.pfe.spring.Service.FilesStorageService;
 import tn.pfe.spring.Service.MenuItemService;
-import tn.pfe.spring.Service.UserService;
 import tn.pfe.spring.mapper.MenuItemMapper;
 
-import javax.transaction.Transactional;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +25,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     private final MenuItemRepository menuItemRepository;
     private final CategoryService categoryService;
     private final MenuItemMapper menuItemMapper;
+    private final FilesStorageService filesStorageService;
 
 
     public List<MenuItem> getAllMenuItem() {
@@ -47,30 +38,22 @@ public class MenuItemServiceImpl implements MenuItemService {
 
 
     public MenuItem createMenuItem(MenuItemDTO menuItem) throws IOException {
-        Category category = categoryService.getCategoryById(menuItem.getCategory());
+        Category category = categoryService.getCategoryById(menuItem.getCategoryId());
         if (category == null) {
-            throw new IllegalArgumentException("La catégorie avec l'ID " + menuItem.getCategory() + " n'existe pas.");
+            throw new IllegalArgumentException("La catégorie avec l'ID " + menuItem.getCategoryId() + " n'existe pas.");
         }
         if (menuItem.getPhoto().isEmpty()) {
             throw new RuntimeException("File is empty");
         }
-        String fileName = menuItem.getPhoto().getOriginalFilename();
+        MenuItem menuItem1=menuItemMapper.toEntity(menuItem);
+        menuItem1.setImage(menuItem.getName().replaceAll("\\s", "") + "-" + (int) (Math.random() * 20) + "." + Objects.requireNonNull(menuItem.getPhoto().getContentType()).split("/")[1]);
 
+        filesStorageService.save(menuItem.getPhoto(), menuItem1.getImage());
         // Define the directory to save the file
-        String uploadDir = "resources";
-        File directory = new File(uploadDir);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-        // Create the file path
-        String filePath = uploadDir + fileName;
 
-        // Save the file to the specified path
-        menuItem.getPhoto().transferTo(new File(filePath));
-
-        menuItem.setCategory(category.getId());
+        menuItem1.setCategory(category);
         return menuItemRepository.save(
-                menuItemMapper.toEntity(menuItem)
+                menuItem1
         );
     }
 

@@ -1,25 +1,16 @@
 package tn.pfe.spring.Entity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import tn.pfe.spring.Entity.MenuItem;
 
 @Entity 
@@ -31,11 +22,12 @@ public class MenuItem{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long Id;
 	private String name;
+    @Column(length = 500)
     private String description;
     private double price;
     private String image;
-    @Transient
     private double discountedPrice;
+    private Long availableCount;
     private int ratingsCount;
     private double ratingsValue;
     private double averageRating;
@@ -50,7 +42,24 @@ public class MenuItem{
     @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MenuItemIngredient> menuItemIngredients;
 
-    
+    @CreatedDate
+    @Column(name = "creationDate", nullable = false,updatable = false)
+    private LocalDate creationDate;
+
+    @LastModifiedDate
+    @Column(name = "lastModifiedDate")
+    private LocalDate lastModifiedDate;
+
+    @PrePersist
+    void onCreate() {
+        this.setCreationDate(LocalDate.now());
+        this.setLastModifiedDate(LocalDate.now());
+    }
+
+    @PreUpdate
+    void onUpdate() {
+        this.setLastModifiedDate(LocalDate.now());
+    }
     public void addIngredient(Ingredient ingredient) {
         if (menuItemIngredients == null) {
             menuItemIngredients = new ArrayList<>();
