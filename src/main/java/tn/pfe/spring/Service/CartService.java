@@ -1,6 +1,7 @@
 package tn.pfe.spring.Service;
 
 
+import tn.pfe.spring.DTO.OrderRequestDTO;
 import tn.pfe.spring.Entity.*;
 import java.util.*;
 
@@ -15,7 +16,7 @@ public interface CartService {
 
     Cart addMenuItemToCart(List<Long> menuItemIds);
 
-//    void placeOrderFromCart(Long customerId, int quantity);
+    void placeOrderFromCart(OrderRequestDTO orderRequestDTO, Long cartId);
 
 
 }

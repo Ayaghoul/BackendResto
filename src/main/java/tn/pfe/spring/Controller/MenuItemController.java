@@ -108,7 +108,7 @@ public class MenuItemController {
         return ResponseEntity.ok(totalCalories);
     }
 
-    @PostMapping("/{menuItemId}/ratings") //tested successfully
+    @PatchMapping("/rate-menu-item/{menuItemId}") //tested successfully
     public ResponseEntity<String> addRatingToMenuItem(
             @PathVariable Long menuItemId,
             @RequestParam double rating

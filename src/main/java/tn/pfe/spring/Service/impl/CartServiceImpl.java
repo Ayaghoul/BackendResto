@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
+import tn.pfe.spring.DTO.OrderRequestDTO;
 import tn.pfe.spring.Entity.*;
 
 import tn.pfe.spring.Repository.*;
@@ -43,6 +44,7 @@ public class CartServiceImpl implements CartService {
         return cartRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart introuvable"));
     }
+
     public List<Cart> getAllCarts() {
         return cartRepository.findAll();
     }
@@ -69,55 +71,49 @@ public class CartServiceImpl implements CartService {
         return cartRepository.save(cart);
     }
 
-//    public void placeOrderFromCart(Long customerId, int quantity) {
-//        Optional<AppUser> customerOptional = userRepository.findById(customerId);
-//        if (customerOptional.isPresent()) {
-//            AppUser customer = customerOptional.get();
-//            Cart cart = customer.getCart();
-//            if (cart != null) {
-//                List<MenuItem> menuItemsCart = cart.getItems();
-//                if (menuItemsCart != null && !menuItemsCart.isEmpty()) {
-//                    Order order = new Order();
-//                    order.setCustomer(customer);
-//                    order.setQuantity(quantity);
-//                    order.setDate(LocalDateTime.now());
-//
-//                    // Calculate the total amount based on the quantity and item prices
-//                    double totalAmount = 0.0;
-//                    Set<OrderItem> orderItems = new HashSet<>();
-//                    for (MenuItem menuItem : menuItemsCart) {
-//                        double itemPrice = menuItem.getPrice();
-//                        double itemAmount = itemPrice * quantity;
-//                        totalAmount += itemAmount;
-//
-//                        OrderItem orderItem = new OrderItem();
-//                        orderItem.setQuantity(quantity);
-//
-//                        orderItem.setOrder(order);
-//                        orderItem.setMenuItem(menuItem);
-//
-//                        orderItems.add(orderItem);
-//                    }
-//
-//                    order.setAmount(totalAmount);
-//                    order.setOrderItems(orderItems);
-//                    order.setStatus(OrderStatus.PENDING); // Set the initial status as pending
-//
-//                    // Save the order and update the customer's cart
-//                    orderRepository.save(order);
-//                    cart.setItems(new ArrayList<>()); // Clear the cart
-//
-//                    userRepository.save(customer);
-//                } else {
-//                    throw new IllegalStateException("Le panier est vide. Impossible de passer une commande.");
-//                }
-//            } else {
-//                throw new IllegalStateException("Le client n'a pas de panier. Impossible de passer une commande.");
-//            }
-//        } else {
-//            throw new IllegalArgumentException("Le client avec l'ID " + customerId + " n'existe pas.");
-//        }
-//    }
+    public void placeOrderFromCart(OrderRequestDTO orderRequestDTO, Long cartId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        AppUser customer = userRepository.findByUsername(currentPrincipalName);
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new RuntimeException("Cart doesnt exist"));
+        if (cart != null) {
+            List<MenuItem> menuItemsCart = cart.getItems();
+            if (menuItemsCart != null && !menuItemsCart.isEmpty()) {
+                Order order = new Order();
+                order.setCustomer(customer);
+                order.setDate(LocalDateTime.now());
+
+                // Calculate the total amount based on the quantity and item prices
+                double totalAmount = 0.0;
+                Set<OrderItem> orderItems = new HashSet<>();
+                for (MenuItem menuItem : menuItemsCart) {
+                    double itemPrice = menuItem.getPrice();
+
+                    OrderItem orderItem = new OrderItem();
+
+                    orderItem.setOrder(order);
+                    orderItem.setMenuItem(menuItem);
+
+                    orderItems.add(orderItem);
+                }
+
+                order.setAmount(totalAmount);
+                order.setOrderItems(orderItems);
+                order.setStatus(OrderStatus.PENDING); // Set the initial status as pending
+
+                // Save the order and update the customer's cart
+                orderRepository.save(order);
+                cart.setItems(new ArrayList<>()); // Clear the cart
+
+                userRepository.save(customer);
+            } else {
+                throw new IllegalStateException("Le panier est vide. Impossible de passer une commande.");
+            }
+        } else {
+            throw new IllegalStateException("Le client n'a pas de panier. Impossible de passer une commande.");
+        }
+    }
 
     private double calculateTotalAmount(List<MenuItem> orderItems) {
         double Amount = 0;

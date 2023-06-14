@@ -18,36 +18,36 @@ import lombok.Data;
 @Data
 public class Order {
 
-	 @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long id;
-	    private LocalDateTime date;
-	    private int quantity;
-	    private double amount;
-	    //paypal
-	    private double price;
-		private String currency;
-		private String method;
-		private String intent;
-		private String description;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private LocalDateTime date;
+    private int quantity;
+    private double amount;
+    //paypal
+    private double price;
+    private String currency;
+    private String method;
+    private String intent;
+    private String description;
 
-	    @Enumerated(EnumType.STRING)
-	    private OrderStatus status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
-	    @ManyToOne
-	    @JoinColumn(name = "customer_id")
-	    private AppUser customer;
-	    
-	    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-	    private Set<OrderItem> orderItems = new HashSet<>();
-	    
-	    @Override
-		public int hashCode() {
-			return Objects.hash(id); // Seule la propriété 'id' est incluse dans le hashcode
-		}
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private AppUser customer;
 
-	   
-	    }
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OrderItem> orderItems = new HashSet<>();
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); // Seule la propriété 'id' est incluse dans le hashcode
+    }
+
+
+}
 	    
 
 	   

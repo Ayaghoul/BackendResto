@@ -41,7 +41,9 @@ public class MenuItem{
     
     @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MenuItemIngredient> menuItemIngredients;
-
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "chef_id")
+    private Chef chef;
     @CreatedDate
     @Column(name = "creationDate", nullable = false,updatable = false)
     private LocalDate creationDate;
