@@ -20,6 +20,7 @@ public class MenuItemDTO {
     private double discountedPrice;
     private String weight;
     private Long categoryId;
+    private Long chefId;
     private Long availableCount;
 
 

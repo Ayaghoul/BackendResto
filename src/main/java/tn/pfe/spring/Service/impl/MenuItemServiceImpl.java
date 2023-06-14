@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tn.pfe.spring.DTO.MenuItemDTO;
 import tn.pfe.spring.Entity.Category;
+import tn.pfe.spring.Entity.Chef;
 import tn.pfe.spring.Entity.MenuItem;
 import tn.pfe.spring.Repository.MenuItemRepository;
 import tn.pfe.spring.Service.CategoryService;
+import tn.pfe.spring.Service.ChefService;
 import tn.pfe.spring.Service.FilesStorageService;
 import tn.pfe.spring.Service.MenuItemService;
 import tn.pfe.spring.mapper.MenuItemMapper;
@@ -24,6 +26,7 @@ public class MenuItemServiceImpl implements MenuItemService {
 
     private final MenuItemRepository menuItemRepository;
     private final CategoryService categoryService;
+    private final ChefService chefService;
     private final MenuItemMapper menuItemMapper;
     private final FilesStorageService filesStorageService;
 
@@ -42,6 +45,10 @@ public class MenuItemServiceImpl implements MenuItemService {
         if (category == null) {
             throw new IllegalArgumentException("La catégorie avec l'ID " + menuItem.getCategoryId() + " n'existe pas.");
         }
+        Chef chef = chefService.getChefById(menuItem.getChefId());
+        if (chef == null) {
+            throw new IllegalArgumentException("La catégorie avec l'ID " + menuItem.getChefId() + " n'existe pas.");
+        }
         if (menuItem.getPhoto().isEmpty()) {
             throw new RuntimeException("File is empty");
         }
@@ -52,6 +59,7 @@ public class MenuItemServiceImpl implements MenuItemService {
         // Define the directory to save the file
 
         menuItem1.setCategory(category);
+        menuItem1.setChef(chef);
         return menuItemRepository.save(
                 menuItem1
         );

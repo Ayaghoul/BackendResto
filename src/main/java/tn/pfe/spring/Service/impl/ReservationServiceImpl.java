@@ -12,6 +12,7 @@ import tn.pfe.spring.Entity.MenuItem;
 import tn.pfe.spring.Repository.ReservationRepository;
 import tn.pfe.spring.Repository.MenuItemRepository;
 import tn.pfe.spring.Repository.UserRepository;
+import tn.pfe.spring.Service.EmailService;
 import tn.pfe.spring.Service.ReservationService;
 import tn.pfe.spring.enumeration.ReservationStatus;
 import tn.pfe.spring.mapper.ReservationMapper;
@@ -25,6 +26,7 @@ import java.util.List;
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final EmailService emailService;
     private final UserRepository userRepository;
     private final ReservationMapper reservationMapper;
 
@@ -48,6 +50,9 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     public Reservation createReservation(ReservationDTO reservationDTO) {
+        String Text =  "Madame, Monsieur,\n\nPar la présente, je vous confirme la réservation d’une table pour " + reservationDTO.getUserId() + " personne(s) de " + reservationDTO.getTime() + " à " + reservationDTO.getTime() +".\n\nJe vous remercie de votre service et vous prie d’agréer, Madame, Monsieur, l’expression de ma respectueuse considération.\n\n" + reservationDTO.getUserId() ;
+        String Subject = "Confirmation de réservation";
+
         AppUser userToUpdate = userRepository.findById(reservationDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("L'utilisateur avec l'ID " + reservationDTO.getUserId() + " n'a pas été trouvée."));
         Reservation reservation = new Reservation();
@@ -55,6 +60,8 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setDate(reservationDTO.getDate());
         reservation.setTime(reservationDTO.getTime());
         reservation.setStatus(ReservationStatus.Pending);
+        emailService.sendSimpleMail(userToUpdate.getEmail(), Text, Subject);
+
         return reservationRepository.save(reservation);
     }
 
