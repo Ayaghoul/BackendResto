@@ -58,13 +58,9 @@ public class CartController {
     }
 
     @PatchMapping("/place-order/{cartId}")
-    public ResponseEntity<String> placeOrderFromCart(@PathVariable("cartId") Long cartId, @RequestBody OrderRequestDTO orderRequestDTO) {
-        try {
+    public ResponseEntity<Order> placeOrderFromCart(@PathVariable("cartId") Long cartId, @RequestBody OrderRequestDTO orderRequestDTO) {
             cartService.placeOrderFromCart(orderRequestDTO, cartId);
-            return ResponseEntity.ok("La commande a été passée avec succès.");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+            return ResponseEntity.ok(cartService.placeOrderFromCart(orderRequestDTO, cartId));
     }
 
 }

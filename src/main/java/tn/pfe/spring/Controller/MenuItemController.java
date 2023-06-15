@@ -109,12 +109,12 @@ public class MenuItemController {
     }
 
     @PatchMapping("/rate-menu-item/{menuItemId}") //tested successfully
-    public ResponseEntity<String> addRatingToMenuItem(
+    public ResponseEntity<Void> addRatingToMenuItem(
             @PathVariable Long menuItemId,
             @RequestParam double rating
     ) {
         menuItemService.addRatingToMenuItem(menuItemId, rating);
-        return ResponseEntity.ok("Rating added successfully.");
+      return    ResponseEntity.ok().build();
     }
 
     @GetMapping("/{menuItemId}/averageRating") //tested successfully

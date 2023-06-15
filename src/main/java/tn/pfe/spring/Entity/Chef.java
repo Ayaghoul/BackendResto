@@ -19,7 +19,6 @@ public class Chef {
     private String chefName;
     private Long phoneNumber;
     private String email;
-    @JsonIgnore
     @OneToMany(mappedBy = "chef", cascade = CascadeType.ALL)
     private List<MenuItem> menuItems;
 

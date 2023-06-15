@@ -71,7 +71,7 @@ public class CartServiceImpl implements CartService {
         return cartRepository.save(cart);
     }
 
-    public void placeOrderFromCart(OrderRequestDTO orderRequestDTO, Long cartId) {
+    public Order placeOrderFromCart(OrderRequestDTO orderRequestDTO, Long cartId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
         AppUser customer = userRepository.findByUsername(currentPrincipalName);
@@ -103,10 +103,9 @@ public class CartServiceImpl implements CartService {
                 order.setStatus(OrderStatus.PENDING); // Set the initial status as pending
 
                 // Save the order and update the customer's cart
-                orderRepository.save(order);
-                cart.setItems(new ArrayList<>()); // Clear the cart
 
                 userRepository.save(customer);
+                return orderRepository.save(order);
             } else {
                 throw new IllegalStateException("Le panier est vide. Impossible de passer une commande.");
             }

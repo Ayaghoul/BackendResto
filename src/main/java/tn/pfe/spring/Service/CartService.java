@@ -16,7 +16,7 @@ public interface CartService {
 
     Cart addMenuItemToCart(List<Long> menuItemIds);
 
-    void placeOrderFromCart(OrderRequestDTO orderRequestDTO, Long cartId);
+    Order placeOrderFromCart(OrderRequestDTO orderRequestDTO, Long cartId);
 
 
 }
